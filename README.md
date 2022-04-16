@@ -4,20 +4,20 @@
 
 ## 如何开始
 
-创建虚拟环境并进入
+**创建虚拟环境并进入**
 
 ```bash
 python -m venv myvenv # 创建一个名为 myvenv 的虚拟环境
 . myvenv/bin/activate
 ```
 
-安装依赖
+**安装依赖**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-运行
+**运行**
 
 ```
 python normlab.py [LabXXX.zip]
