@@ -4,6 +4,12 @@
 
 ## 如何开始
 
+**安装 unrar 命令**
+
+```bash
+brew install rar # Mac
+```
+
 **创建虚拟环境并进入**
 
 ```bash
