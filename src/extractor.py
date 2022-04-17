@@ -56,7 +56,7 @@ class UnRar(Extractor):
     def __init__(self, source_path: str, target_path: str) -> None:
         super().__init__(source_path, target_path)
 
-    def __enter__(self):
+    def __enter__(self) -> Extractor:
         self.__rar_file = rarfile.RarFile(self._source_path)
         return self
 
