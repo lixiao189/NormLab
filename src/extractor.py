@@ -9,7 +9,7 @@ class Extractor(abc.ABC):
     一个抽象类, 约束了解压类
     """
 
-    def __init__(self, source_path, target_path) -> None:
+    def __init__(self, source_path: str, target_path: str) -> None:
         self._source_path = source_path  # 压缩包文件路径
         self._target_path = target_path  # 压缩包目标路径
 
