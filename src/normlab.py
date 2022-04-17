@@ -4,33 +4,17 @@ import pathlib
 import typing
 
 import extractor
+import student
 
 from student import Student
 
 
 class NormLab:
-    def __init__(self, homeworks_path: str, result_dir: str, students_list_path: str = "") -> None:
-        self.__students: typing.Dict[str, Student] = dict()
+    def __init__(self, homeworks_path: str, result_dir: str, student_repo: student.AbstractStudentRepo) -> None:
         self.__homeworks_path = homeworks_path
         self.__lab_id = pathlib.Path(self.__homeworks_path).name.split("-")[0]
         self.__result_dir = result_dir + "/" + self.__lab_id  # 结果输出路径
-
-        # 初始化学生列表
-        self.read_students_list(students_list_path)
-
-    def read_students_list(self, students_list_path) -> None:
-        """
-        从 csv 中读取学生信息
-        """
-        with open(students_list_path) as f:
-            csv_reader = csv.reader(f)
-
-            # 读取文件头
-            _ = next(csv_reader)
-
-            # 读取学生信息
-            for row in csv_reader:
-                self.__students[row[0]] = Student(row[0], row[1], row[2])
+        self.student_repo = student_repo
 
     def extract_source_homework(self) -> None:
         """
@@ -54,8 +38,8 @@ class NormLab:
                 # 解压当前文件
                 path_obj = pathlib.Path(os.path.join(root, file))
                 student_id = path_obj.name.split('-')[0]
-                student_dir_path = root + "/" + self.__lab_id + "-" + student_id + "-" + self.__students[
-                    student_id].get_short_name()
+                student_obj = self.student_repo.get_student(student_id)
+                student_dir_path = root + "/" + self.__lab_id + "-" + student_id + "-" + student_obj.get_short_name()
 
                 # 开始解压
                 if path_obj.suffix == ".zip":
@@ -89,13 +73,6 @@ class NormLab:
 
                 os.remove(os.path.join(root, file))
 
-    # getters
-    def get_students(self) -> typing.Dict[str, Student]:
-        """
-        获取学生列表
-        """
-        return self.__students
-
     def get_homeworks_path(self) -> str:
         """
         获取作业源文件路径
@@ -116,9 +93,4 @@ class NormLab:
 
 
 if __name__ == '__main__':
-    homeworks_file_path = "../data/Lab03-JUnit for Unit Test.zip"  # 源文件路径
-    homeworks_result_dir = "../temp"  # 父目录存储结果
-
-    normLab = NormLab(homeworks_file_path, homeworks_result_dir)  # 创建系统对象
-
-    normLab.extract_source_homework()  # 解压作业文件
+    pass

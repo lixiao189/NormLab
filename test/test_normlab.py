@@ -3,6 +3,7 @@ import pathlib
 import pytest
 import os
 
+import student
 from normlab import NormLab
 
 
@@ -12,7 +13,9 @@ def normlab_obj():
     homeworks_result_dir = "../temp"  # 父目录存储结果
     students_list_path = "../data/students_list.csv"
 
-    return NormLab(homeworks_file_path, homeworks_result_dir, students_list_path)  # 创建系统对象
+    with student.CSVStudentRepo(students_list_path) as repo:
+        normlab_obj = NormLab(homeworks_file_path, homeworks_result_dir, repo)
+    return normlab_obj  # 创建系统对象
 
 
 def test_get_lab_id():
