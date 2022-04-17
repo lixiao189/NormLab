@@ -68,19 +68,47 @@ class NormLab:
             for file in files:
                 # 解压当前文件
                 path_obj = pathlib.Path(os.path.join(root, file))
+                student_id = path_obj.name.split('-')[0]
+                student_dir_path = root + "/" + self.__lab_id + "-" + student_id + "-" + self.__students[
+                    student_id].get_short_name()
+
+                # 开始解压
                 if path_obj.suffix == ".zip":
                     homeworks_extractor = extractor.UnZip
                 elif path_obj.suffix == ".rar":
                     homeworks_extractor = extractor.UnRar
+                else:
+                    continue
+                with homeworks_extractor(os.path.join(root, file),
+                                         student_dir_path) as e:
+                    e.extract()
+
+                os.remove(os.path.join(root, file))
+
+        # 对学生的子文件夹进行解压
+        for root, dirs, files in os.walk(self.__result_dir):
+            for file in files:
+                # 解压当前文件
+                path_obj = pathlib.Path(os.path.join(root, file))
+                if path_obj.suffix == ".zip":
+                    homeworks_extractor = extractor.UnZip
+                elif path_obj.suffix == ".rar":
+                    homeworks_extractor = extractor.UnRar
+                else:
+                    continue
 
                 with homeworks_extractor(os.path.join(root, file),
-                                         root + "/" + path_obj.name.split(".")[0]):
-                    homeworks_extractor.extract()
+                                         root + "/" + path_obj.name.split(".")[0]) as e:
+                    dirs.append(root + "/" + path_obj.name.split(".")[0])
+                    e.extract()
 
-                os.remove(path_obj.name)
+                os.remove(os.path.join(root, file))
 
     # getters
     def get_students(self) -> typing.Dict[str, Student]:
+        """
+        获取学生列表
+        """
         return self.__students
 
     def get_homeworks_path(self) -> str:
