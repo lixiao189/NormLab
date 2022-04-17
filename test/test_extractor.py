@@ -13,15 +13,15 @@ def test_unzip():
 
     a_student_file_name = "L201926630134-HOMWEYETSUROMARTIN.zip"
 
-    with extractor.UnZip(source_file_path, target_dir_path) as unzip:
-        unzip.extract()
+    unzip = extractor.UnZip(source_file_path, target_dir_path)
+    unzip.extract()
 
-        for root, dirs, files in os.walk(target_dir_path):
-            assert a_student_file_name in files
-            break
+    for root, dirs, files in os.walk(target_dir_path):
+        assert a_student_file_name in files
+        break
 
-        # 删除临时文件
-        shutil.rmtree(target_dir_path)
+    # 删除临时文件
+    shutil.rmtree(target_dir_path)
 
 
 def test_unrar():
@@ -33,12 +33,12 @@ def test_unrar():
 
     file_dir_name = "test"
 
-    with extractor.UnRar(source_file_path, target_dir_path) as unrar:
-        unrar.extract()
+    unrar = extractor.UnRar(source_file_path, target_dir_path)
+    unrar.extract()
 
-        for root, dirs, files in os.walk(target_dir_path):
-            assert file_dir_name in dirs
-            break
+    for root, dirs, files in os.walk(target_dir_path):
+        assert file_dir_name in dirs
+        break
 
-        # 删除临时文件
-        shutil.rmtree(target_dir_path)
+    # 删除临时文件
+    shutil.rmtree(target_dir_path)
