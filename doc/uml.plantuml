@@ -3,15 +3,11 @@ skinparam classAttributeIconSize 0
 
 ' 整个系统类
 class NormLab {
-    - students: List[Student]
-    - homeworksPath: str
+    - __lab_id: str
 
-    + __init__(self, homeworksPath: str)
-    
-    + getStudents(): List[Student]
+    ++ __init__(self, homeworks_path: str): None
 
-    + tidyHomeworks(self)
-    + generateSimilarReport(self)
+    + get_lab_id(self) -> str
 }
 
 ' 学生类
