@@ -1,0 +1,77 @@
+@startuml main
+skinparam classAttributeIconSize 0
+
+' 整个系统类
+class NormLab {
+    - students: List[Student]
+    - homeworksPath: str
+
+    + __init__(self, homeworksPath: str)
+    
+    + getStudents(): List[Student]
+
+    + tidyHomeworks(self)
+    + generateSimilarReport(self)
+}
+
+' 学生类
+class Student {
+    - sid: str
+    - name: str
+    - shortName: str
+    
+    - homeworkPath: str
+    - GroupID: str
+
+    + __init__(self, sid: str, name: str, shortName: str)
+
+    + getSID(self): str
+    + getName(self): str
+    + getShortName(self): str
+
+    + tidyHomework(self)
+}
+
+' 互相抄袭的一组人
+class Group {
+    - id: str 
+    - reasons: List[str]
+    - students: List[student]
+
+    + __init__(self)
+    
+    + getReasons(self): List[str]
+    + getStudents(self): List[str]
+}
+
+note left of Group::"__init__(self)"
+    这个函数在初始化的时候需要初始化 
+    reasons 和 students 数组为空数组
+end note
+
+' 仓库类
+abstract class AbstractGroupRepository {
+    + abstract add()
+}
+class CSVGroupRepository implements AbstractGroupRepository {
+    + abstract add()
+}
+
+note left of AbstractGroupRepository::"add()" 
+    添加一个 Group 方法
+end note
+
+' Uow 类
+abstract class AbstractGroupUnitOfWork {
+    - groups: AbstractGroupRepository
+
+    + __enter__(self)
+    + __exit__(self, *args)
+
+    + getGroups(): AbstractGroupRepository
+}
+class CSVGroupUnitOfWork implements AbstractGroupUnitOfWork {
+    +__enter__(self)
+    +__exit__(self, *args)
+}
+@enduml
