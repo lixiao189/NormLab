@@ -29,14 +29,14 @@ def test_extract_source_homework(normlab_obj: NormLab):
         ".zip",
         ".rar"
     ]
-    #TODO 压缩中文乱码
+
     normlab_obj.extract_source_homework()
-    # for root, dirs, files in os.walk(normlab_obj.get_result_dir()):
-    #     for file in files:
-    #         if pathlib.Path(os.path.join(root, file)).suffix in compress_file_suffix:
-    #             has_compress_file = True
-    #
-    # assert not has_compress_file
+    for root, dirs, files in os.walk(normlab_obj.get_result_dir()):
+        for file in files:
+            if pathlib.Path(os.path.join(root, file)).suffix in compress_file_suffix:
+                has_compress_file = True
+
+    assert not has_compress_file
 
 
 def test_read_students_list(normlab_obj: NormLab):
