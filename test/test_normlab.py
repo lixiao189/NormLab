@@ -37,9 +37,3 @@ def test_extract_source_homework(normlab_obj: NormLab):
                 has_compress_file = True
 
     assert not has_compress_file
-
-
-def test_read_students_list(normlab_obj: NormLab):
-    normlab_obj.read_students_list("../data/students_list.csv")
-    assert normlab_obj.get_students()['L201926630103'].get_full_name() == "Doma Victor"
-    assert not normlab_obj.get_students()['L201926630103'].get_full_name() == "Node Sans"
