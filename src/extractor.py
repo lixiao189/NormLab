@@ -1,3 +1,4 @@
+import os
 import zipfile
 import abc
 
@@ -46,6 +47,23 @@ class UnZip(Extractor):
 
         for file in file_list:
             self.__zip_file.extract(file, self._target_path)
+
+            # 修复乱码
+            try:
+                new_name = file.encode("cp437")
+                new_name = new_name.decode("utf-8")
+                os.rename(self._target_path + "/" + file,
+                          self._target_path + "/" + new_name)
+            except UnicodeDecodeError:
+                pass
+
+            try:
+                new_name = file.encode("cp437")
+                new_name = new_name.decode("gbk")
+                os.rename(self._target_path + "/" + file,
+                          self._target_path + "/" + new_name)
+            except UnicodeDecodeError:
+                pass
 
 
 class UnRar(Extractor):
