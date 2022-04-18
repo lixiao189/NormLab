@@ -72,6 +72,9 @@ class NormLab:
                 os.remove(os.path.join(root, file))
 
     def delete_extra_files(self) -> None:
+        """
+        删除多余的文件
+        """
         extra_dir_list: typing.List[str] = [
             ".idea",
             ".vscode",
