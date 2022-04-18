@@ -1,12 +1,10 @@
-import csv
 import os
 import pathlib
+import shutil
 import typing
 
 import extractor
 import student
-
-from student import Student
 
 
 class NormLab:
@@ -72,6 +70,27 @@ class NormLab:
                     e.extract()
 
                 os.remove(os.path.join(root, file))
+
+    def delete_extra_files(self) -> None:
+        extra_dir_list: typing.List[str] = [
+            ".idea",
+            ".vscode",
+            "target",
+        ]
+        extra_file_list: typing.List[str] = [
+            "计算机科学与技术学院-软件工程（留学生）-2019软件工程（留学生）",
+            ".class"
+        ]
+
+        for root, dirs, files in os.walk(self.__result_dir):
+            for dirname in dirs:
+                if dirname in extra_dir_list:
+                    shutil.rmtree(os.path.join(root, dirname))
+
+            for filename in files:
+                for file_should_delete in extra_file_list:
+                    if file_should_delete in filename:
+                        os.remove(os.path.join(root, filename))
 
     def get_homeworks_path(self) -> str:
         """

@@ -1,4 +1,5 @@
 import pathlib
+import typing
 
 import pytest
 import os
@@ -27,6 +28,9 @@ def test_get_lab_id():
 
 
 def test_extract_source_homework(normlab_obj: NormLab):
+    """
+    测试解压作业文件夹
+    """
     has_compress_file = False
     compress_file_suffix = [
         ".zip",
@@ -40,3 +44,21 @@ def test_extract_source_homework(normlab_obj: NormLab):
                 has_compress_file = True
 
     assert not has_compress_file
+
+
+def test_delete_extra_files(normlab_obj: NormLab) -> None:
+    """
+    检测是否还有多余的文件夹
+    """
+    has_extra_dir = False
+    extra_dir_list: typing.List[str] = [
+        ".idea",
+        ".vscode",
+        "target",
+    ]
+    for root, dirs, files in os.walk(normlab_obj.get_result_dir()):
+        for dirname in dirs:
+            if dirname in extra_dir_list:
+                has_extra_dir = True
+
+    assert not has_extra_dir
