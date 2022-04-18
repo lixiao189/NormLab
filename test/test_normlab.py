@@ -11,7 +11,7 @@ from normlab import NormLab
 @pytest.fixture(scope="module")
 def normlab_obj():
     homeworks_file_path = "../data/Lab03-JUnit for Unit Test.zip"  # 源文件路径
-    homeworks_result_dir = "../temp"  # 父目录存储结果
+    homeworks_result_dir = "../result"  # 父目录存储结果
     students_list_path = "../data/students_list.csv"
 
     with student.CSVStudentRepo(students_list_path) as repo:

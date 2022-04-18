@@ -9,7 +9,7 @@ def test_unzip():
     测试解压 zip 文件, 检查某个学生的文件是否被解压出来
     """
     source_file_path = "../data/Lab03-JUnit for Unit Test.zip"
-    target_dir_path = "../temp"
+    target_dir_path = "../result"
 
     a_student_file_name = "L201926630134-HOMWEYETSUROMARTIN.zip"
 
@@ -29,7 +29,7 @@ def test_unrar():
     测试解压 rar 文件
     """
     source_file_path = "../data/test.rar"
-    target_dir_path = "../temp"
+    target_dir_path = "../result"
 
     file_dir_name = "test"
 

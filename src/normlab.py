@@ -143,6 +143,9 @@ class NormLab:
                         shutil.move(os.path.join(root, temp_name, son_dirs[0]), os.path.join(root))
                         shutil.rmtree(os.path.join(root, temp_name))
 
+    def generate_similar_report(self) -> None:
+        pass
+
     def get_homeworks_path(self) -> str:
         """
         获取作业源文件路径
@@ -170,7 +173,7 @@ class NormLab:
 
 if __name__ == '__main__':
     homeworks_file_path = "../data/Lab03-JUnit for Unit Test.zip"  # 源文件路径
-    homeworks_result_dir = "../temp"  # 父目录存储结果
+    homeworks_result_dir = "../result"  # 父目录存储结果
     students_list_path = "../data/students_list.csv"
 
     shutil.rmtree(homeworks_result_dir)  # 删除之前的结果
@@ -182,3 +185,4 @@ if __name__ == '__main__':
     normlab_obj.delete_extra_files()
     normlab_obj.move_reports()
     normlab_obj.remove_repetitive_dir()
+    normlab_obj.generate_similar_report()
