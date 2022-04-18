@@ -96,7 +96,7 @@ class AbstractSimilarReporter(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def generate_reporter(self, report_data: typing.List[typing.List[int]]):
+    def generate_reporter(self, report_data: typing.List[typing.List[str]]):
         raise NotImplementedError
 
 
@@ -116,7 +116,7 @@ class CSVSimilarReporter(AbstractSimilarReporter):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.__csv_file.close()
 
-    def generate_reporter(self, report_data: typing.List[typing.List[int]]) -> None:
+    def generate_reporter(self, report_data: typing.List[typing.List[str]]) -> None:
         for row in report_data:
             self.__csv_writer.writerow(row)
 

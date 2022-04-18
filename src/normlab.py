@@ -186,9 +186,6 @@ class NormLab:
                     self.__similar_group.union_with_reason(s1.get_stu_id(), s2.get_stu_id(),
                                                            student.SimilarReason.SIMILAR_NAME)
 
-        print(self.__similar_group.get_similar_set())  # debug
-        print(self.__similar_group.get_similar_reason())  # debug
-
     def get_homeworks_path(self) -> str:
         """
         获取作业源文件路径
@@ -221,8 +218,8 @@ if __name__ == '__main__':
 
     shutil.rmtree(homeworks_result_dir)  # 删除之前的结果
 
-    with student.CSVStudentRepo(students_list_path) as repo, student.CSVSimilarReporter(
-            homeworks_result_dir) as similar_reporter:
+    with student.CSVStudentRepo(students_list_path) as repo, \
+            student.CSVSimilarReporter(homeworks_result_dir) as similar_reporter:
         normlab_obj = NormLab(homeworks_file_path, homeworks_result_dir, repo, similar_reporter)
 
     normlab_obj.extract_source_homework()
