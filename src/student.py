@@ -86,6 +86,49 @@ class CSVStudentRepo(AbstractStudentRepo):
         return students_list
 
 
+class AbstractSimilarReporter(abc.ABC):
+    @abc.abstractmethod
+    def __enter__(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def generate_reporter(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def close_file(self) -> None:
+        raise NotImplementedError
+
+
+class CSVSimilarReporter(AbstractSimilarReporter):
+    """
+    使用 csv 生成雷同报告
+    """
+
+    def __init__(self, output_path: str, report_data: typing.List[typing.List[int]]):
+        self.__csv_file = open(output_path, 'w', newline='')
+
+        self.__report_data = report_data
+        self.__csv_writer = csv.writer(self.__csv_file)
+
+    def __enter__(self) -> AbstractSimilarReporter:
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.__csv_file.close()
+
+    def generate_reporter(self) -> None:
+        for row in self.__report_data:
+            self.__csv_writer.writerow(row)
+
+    def close_file(self) -> None:
+        self.__csv_file.close()
+
+
 class SimilarGroup:
     """
     一个并查集用来合并抄袭的一组人
