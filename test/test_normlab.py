@@ -67,4 +67,20 @@ def test_delete_extra_files(normlab_obj: NormLab) -> None:
 
 
 def test_move_reports(normlab_obj: NormLab) -> None:
+    students = normlab_obj.get_students_repo().get_all_students()
+    report_missing = False
+
+    # 生成所有人的报告文件名
+    report_names = []
+    for student_obj in students:
+        report_names.append(
+            normlab_obj.get_lab_id() + "-" + student_obj.get_stu_id() + "-" + student_obj.get_short_name())
+
     normlab_obj.move_reports()
+    file_dir_list = os.listdir(normlab_obj.get_result_dir())
+
+    for report_name in report_names:
+        if report_name in file_dir_list and (report_name + ".docx") not in file_dir_list:
+            report_missing = True
+
+    assert not report_missing

@@ -12,7 +12,7 @@ class NormLab:
         self.__homeworks_path = homeworks_path
         self.__lab_id = pathlib.Path(self.__homeworks_path).name.split("-")[0]
         self.__result_dir = result_dir + "/" + self.__lab_id  # 结果输出路径
-        self.student_repo = student_repo
+        self.__student_repo = student_repo
 
     def extract_source_homework(self) -> None:
         """
@@ -36,7 +36,7 @@ class NormLab:
                 # 解压当前文件
                 path_obj = pathlib.Path(os.path.join(root, file))
                 student_id = path_obj.name.split('-')[0]
-                student_obj = self.student_repo.get_student(student_id)
+                student_obj = self.__student_repo.get_student(student_id)
                 student_dir_path = root + "/" + self.__lab_id + "-" + student_id + "-" + student_obj.get_short_name()
 
                 # 开始解压
@@ -111,10 +111,20 @@ class NormLab:
                     os.remove(docx_file_list[i])
 
     def move_reports(self) -> None:
-        for root, dirs, files in os.walk(self.__result_dir):
-            for filename in files:
-                if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
-                    print(os.path.join(root, filename))  # debug
+        homework_list = os.listdir(self.__result_dir)
+
+        for homework_dir in homework_list:
+            # 获取学生对象
+            student_id = homework_dir.split("-")[1]
+            student_obj = self.__student_repo.get_student(student_id)
+            report_file_name = self.__lab_id + "-" + student_id + "-" + student_obj.get_short_name() + ".docx"
+
+            # 处理报告 docx 文件
+            for root, dirs, files in os.walk(os.path.join(self.__result_dir, homework_dir)):
+                for filename in files:
+                    if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
+                        os.rename(os.path.join(root, filename), os.path.join(root, report_file_name))
+                        shutil.move(os.path.join(root, report_file_name), self.__result_dir)
 
     def get_homeworks_path(self) -> str:
         """
@@ -133,6 +143,12 @@ class NormLab:
         获取输出结果路径
         """
         return self.__result_dir
+
+    def get_students_repo(self) -> student.AbstractStudentRepo:
+        """
+        获取学生仓库
+        """
+        return self.__student_repo
 
 
 if __name__ == '__main__':

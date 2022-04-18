@@ -37,6 +37,10 @@ class AbstractStudentRepo(abc.ABC):
     def get_student(self, stu_id) -> Student:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def get_all_students(self) -> typing.List[Student]:
+        raise NotImplementedError
+
 
 class CSVStudentRepo(AbstractStudentRepo):
     """
@@ -63,3 +67,10 @@ class CSVStudentRepo(AbstractStudentRepo):
 
     def get_student(self, stu_id) -> Student:
         return self.__students[stu_id]
+
+    def get_all_students(self) -> typing.List[Student]:
+        students_list = []
+        for key in self.__students:
+            students_list.append(self.__students[key])
+
+        return students_list
