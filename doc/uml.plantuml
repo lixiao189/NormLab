@@ -92,6 +92,23 @@ package "extractor" {
 }
 
 class NormLab {
+    - __homeworks_path: str
+    - __lab_id: str
+    - __result_dir: str
+    - __student_repo: AbstractStudentRepo
+    - __similar_group: SimilarGroup
+    - __similar_reporter: AbstractSimilarReporter
+
+    + extract_source_homework(): None
+    + delete_extra_files(): None
+    + move_reports(): None
+    + remove_repetitive_dir(): None
+    + generate_similar_report(): None
+
+    + get_homeworks_path(): str
+    + get_lab_id(): str
+    + get_result_dir(): str
+    + get_students_repo(): str
 }
 
 NormLab o-- AbstractSimilarReporter
