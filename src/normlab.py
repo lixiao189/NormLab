@@ -111,6 +111,9 @@ class NormLab:
                     os.remove(docx_file_list[i])
 
     def move_reports(self) -> None:
+        """
+        移动报告文件到指定目录
+        """
         homework_list = os.listdir(self.__result_dir)
 
         for homework_dir in homework_list:
