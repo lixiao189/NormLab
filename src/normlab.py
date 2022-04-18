@@ -186,7 +186,16 @@ class NormLab:
                     self.__similar_group.union_with_reason(s1.get_stu_id(), s2.get_stu_id(),
                                                            student.SimilarReason.SIMILAR_NAME)
 
-                self.__similar_reporter.generate_reporter([['fuck', 'yes', 'shit']])  # debug
+        # debug
+        print(self.__similar_group.get_similar_set())
+        print(self.__similar_group.get_similar_reason())
+        group_id: typing.Dict[str, int] = dict()
+        groups: typing.List[typing.List[str]]
+        group_id: int = 0
+        for reason in self.__similar_group.get_similar_reason():
+            if not len(reason) == 0:
+                # 发现雷同作业
+                father = self.__similar_group.find()
 
     def get_homeworks_path(self) -> str:
         """

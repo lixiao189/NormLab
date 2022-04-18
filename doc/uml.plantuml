@@ -1,4 +1,72 @@
 @startuml main
 skinparam classAttributeIconSize 0
+package "student" #DDDDDD {
+    class Student {
+        - __stu_id: str
+        - __full_name: str
+        - __short_name: str
 
+        + get_stu_id(): str
+        + get_full_name(): str
+        + get_short_name(): str
+    }
+
+    abstract class AbstractStudentRepo {
+        + {abstract} __enter__(): None
+        + {abstract} __exit__(exc_type, exc_val, exc_tb): None
+        + {abstract} get_student(stu_id: str): Student
+        + {abstract} get_all_students(): List[Student]
+    }
+
+    class CSVStudentRepo extends AbstractStudentRepo {
+        - __students: Dict[str, Student]
+        - __csv_path: str
+        - __csv_file: IO
+
+        + __init__(csv_path: str): None
+        + __enter__(): None
+        + __exit__(exc_type, exc_val, exc_tb): None
+        + get_student(stu_id: str): Student
+        + get_all_students(): List[Student]
+    }
+
+    CSVStudentRepo o-- Student
+
+    abstract class AbstractSimilarReporter {
+        + {abstract} __enter__(): None
+        + {abstract} __exit__(exc_type, exc_val, exc_tb): None
+        + {abstract} generate_reporter(report_data: List[List[str]]): None
+    }
+
+    abstract class CSVSimilarReporter extends AbstractSimilarReporter {
+        - __csv_file: IO
+        - __csv_writer: _writer
+        + __enter__(): None
+        + __exit__(exc_type, exc_val, exc_tb): None
+        + generate_reporter(report_data: List[List[str]]): None
+    }
+
+    class SimilarGroup {
+        - __similar_set: Dict[str, str]
+        - __similar_reason: Dict[str, set]
+
+        + find(stu_id: str): str
+        + union(stu_id1: str, stu_id2: str): None
+        + union_with_reason(stu_id1: str, reason: int): None
+
+        + get_similar_set(): Dict[str, str]
+        + get_similar_reason: Dict[str, set]
+    }
+}
+
+package "extractor" {
+
+}
+
+class NormLab {
+}
+
+NormLab o-- AbstractSimilarReporter
+NormLab o-- AbstractStudentRepo
+NormLab o-- SimilarGroup
 @enduml
