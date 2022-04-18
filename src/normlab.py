@@ -162,14 +162,27 @@ class NormLab:
                 s2_homework_dir = self.__lab_id + "-" + s2.get_stu_id() + "-" + s2.get_short_name()
 
                 # 开始比较两个人的作业
+                similar_file_name = True
+                similar_file_size = True
                 file_size: typing.Dict[str, int] = dict()
                 for root, dirs, files in os.walk(os.path.join(self.__result_dir, s1_homework_dir)):
                     for filename in files:
-                        print("s1:" + filename)
+                        file_size[filename] = os.stat(os.path.join(root, filename)).st_size
 
                 for root, dirs, files in os.walk(os.path.join(self.__result_dir, s2_homework_dir)):
                     for filename in files:
-                        print("s2:" + filename)
+                        if filename not in file_size:
+                            similar_file_name = False
+                        elif file_size[filename] != os.stat(os.path.join(root, filename)).st_size:
+                            # 如果同名文件文件尺寸不一样
+                            similar_file_size = False
+
+                if similar_file_size:
+                    self.__similar_group.union_with_reason(s1.get_stu_id(), s2.get_stu_id(),
+                                                           student.SimilarReason.SIMILAR_SIZE)
+                if similar_file_name:
+                    self.__similar_group.union_with_reason(s1.get_stu_id(), s2.get_stu_id(),
+                                                           student.SimilarReason.SIMILAR_NAME)
 
     def get_homeworks_path(self) -> str:
         """

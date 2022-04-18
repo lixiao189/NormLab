@@ -4,6 +4,15 @@ import enum
 import typing
 
 
+class SimilarReason(enum.Enum):
+    """
+    关于雷同的原因的 enum 类型
+    """
+    SIMILAR_SIZE = enum.auto()
+    SIMILAR_NAME = enum.auto()
+    SIMILAR_STRUCT = enum.auto()
+
+
 class Student:
     def __init__(self, stu_id: str, full_name: str, short_name: str) -> None:
         self.__stu_id = stu_id
@@ -87,9 +96,11 @@ class SimilarGroup:
         初始化并查集
         """
         self.__similar_set: typing.Dict[str, str] = dict()  # 存储这一组中的头头的 id
+        self.__similar_reason: typing.Dict[str, set] = dict()  # 存储每个人雷同的原因
 
         for student in stu_repo.get_all_students():
             self.__similar_set[student.get_stu_id()] = student.get_stu_id()
+            self.__similar_reason[student.get_stu_id()] = set([])
 
     def find(self, stu_id: str) -> str:
         """
@@ -108,11 +119,14 @@ class SimilarGroup:
 
         self.__similar_set[father1] = father2
 
+    def union_with_reason(self, stu_id1, stu_id2, reason):
+        # 处理原因
+        for origin_reason in self.__similar_reason[stu_id1]:
+            self.__similar_reason[stu_id2].add(origin_reason)
+        for origin_reason in self.__similar_reason[stu_id2]:
+            self.__similar_reason[stu_id1].add(origin_reason)
 
-class SimilarReason(enum.Enum):
-    """
-    关闭雷同的原因的 enum 类型
-    """
-    SIMILAR_SIZE = enum.auto()
-    SIMILAR_NAME = enum.auto()
-    SIMILAR_STRUCT = enum.auto()
+        self.__similar_reason[stu_id1].add(reason)
+        self.__similar_reason[stu_id2].add(reason)
+
+        self.union(stu_id1, stu_id2)
