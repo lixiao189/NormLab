@@ -8,12 +8,14 @@ import student
 
 
 class NormLab:
-    def __init__(self, homeworks_path: str, result_dir: str, student_repo: student.AbstractStudentRepo) -> None:
+    def __init__(self, homeworks_path: str, result_dir: str, student_repo: student.AbstractStudentRepo,
+                 reporter: student.AbstractSimilarReporter) -> None:
         self.__homeworks_path = homeworks_path
         self.__lab_id = pathlib.Path(self.__homeworks_path).name.split("-")[0]
         self.__result_dir = result_dir + "/" + self.__lab_id  # 结果输出路径
         self.__student_repo = student_repo
         self.__similar_group = student.SimilarGroup(self.__student_repo)  # 判断是否有相同情况的并查集
+        self.__similar_reporter = reporter
 
     def extract_source_homework(self) -> None:
         """
@@ -219,8 +221,9 @@ if __name__ == '__main__':
 
     shutil.rmtree(homeworks_result_dir)  # 删除之前的结果
 
-    with student.CSVStudentRepo(students_list_path) as repo:
-        normlab_obj = NormLab(homeworks_file_path, homeworks_result_dir, repo)
+    with student.CSVStudentRepo(students_list_path) as repo, student.CSVSimilarReporter(
+            homeworks_result_dir) as similar_reporter:
+        normlab_obj = NormLab(homeworks_file_path, homeworks_result_dir, repo, similar_reporter)
 
     normlab_obj.extract_source_homework()
     normlab_obj.delete_extra_files()
