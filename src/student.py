@@ -1,6 +1,8 @@
 import abc
 import csv
 import enum
+import os
+import pathlib
 import typing
 
 
@@ -106,8 +108,13 @@ class CSVSimilarReporter(AbstractSimilarReporter):
     """
 
     def __init__(self, output_path: str):
-        self.__csv_file = open(output_path, 'w', newline='')
+        pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
 
+        file_path = output_path + "/SimilarWorksReport.csv"
+        file = pathlib.Path(file_path)
+        file.touch(exist_ok=True)
+
+        self.__csv_file = open(file, 'w+', newline='')
         self.__csv_writer = csv.writer(self.__csv_file)
 
     def __enter__(self) -> AbstractSimilarReporter:

@@ -186,6 +186,8 @@ class NormLab:
                     self.__similar_group.union_with_reason(s1.get_stu_id(), s2.get_stu_id(),
                                                            student.SimilarReason.SIMILAR_NAME)
 
+                self.__similar_reporter.generate_reporter([['fuck', 'yes', 'shit']])  # debug
+
     def get_homeworks_path(self) -> str:
         """
         获取作业源文件路径
@@ -216,14 +218,17 @@ if __name__ == '__main__':
     homeworks_result_dir = "../result"  # 父目录存储结果
     students_list_path = "../data/students_list.csv"
 
-    shutil.rmtree(homeworks_result_dir)  # 删除之前的结果
+    try:
+        shutil.rmtree(homeworks_result_dir)  # 删除之前的结果
+    except FileNotFoundError:
+        pass
 
     with student.CSVStudentRepo(students_list_path) as repo, \
             student.CSVSimilarReporter(homeworks_result_dir) as similar_reporter:
         normlab_obj = NormLab(homeworks_file_path, homeworks_result_dir, repo, similar_reporter)
 
-    normlab_obj.extract_source_homework()
-    normlab_obj.delete_extra_files()
-    normlab_obj.move_reports()
-    normlab_obj.remove_repetitive_dir()
-    normlab_obj.generate_similar_report()
+        normlab_obj.extract_source_homework()
+        normlab_obj.delete_extra_files()
+        normlab_obj.move_reports()
+        normlab_obj.remove_repetitive_dir()
+        normlab_obj.generate_similar_report()
