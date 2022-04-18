@@ -130,3 +130,10 @@ class SimilarGroup:
         self.__similar_reason[stu_id2].add(reason)
 
         self.union(stu_id1, stu_id2)
+
+    # getters
+    def get_similar_set(self) -> typing.Dict[str, str]:
+        return self.__similar_set
+
+    def get_similar_reason(self) -> typing.Dict[str, set]:
+        return self.__similar_reason

@@ -184,6 +184,9 @@ class NormLab:
                     self.__similar_group.union_with_reason(s1.get_stu_id(), s2.get_stu_id(),
                                                            student.SimilarReason.SIMILAR_NAME)
 
+        print(self.__similar_group.get_similar_set())  # debug
+        print(self.__similar_group.get_similar_reason())  # debug
+
     def get_homeworks_path(self) -> str:
         """
         获取作业源文件路径
