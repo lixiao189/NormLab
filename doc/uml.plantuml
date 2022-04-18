@@ -60,7 +60,35 @@ package "student" #DDDDDD {
 }
 
 package "extractor" {
+    abstract class Extractor {
+        # _source_path: str
+        # _target_path: str
 
+        + {abstract} __init__(source_path: str, target_path: str): None
+        + {abstract} __enter__(): None
+        + {abstract} __exit(exc_type, exc_val, exc_tb): None
+        + {abstract} extract(): None
+    }
+
+    class UnZip extends Extractor {
+        # _source_path: str
+        # _target_path: str
+
+        + __init__(source_path: str, target_path: str): None
+        + __enter__(): None
+        + __exit(exc_type, exc_val, exc_tb): None
+        + extract(): None
+    }
+
+    class UnRar extends Extractor {
+        # _source_path: str
+        # _target_path: str
+
+        + __init__(source_path: str, target_path: str): None
+        + __enter__(): None
+        + __exit(exc_type, exc_val, exc_tb): None
+        + extract(): None
+    }
 }
 
 class NormLab {
@@ -69,4 +97,5 @@ class NormLab {
 NormLab o-- AbstractSimilarReporter
 NormLab o-- AbstractStudentRepo
 NormLab o-- SimilarGroup
+NormLab ..> Extractor
 @enduml
