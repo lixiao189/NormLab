@@ -1,5 +1,6 @@
 import abc
 import csv
+import enum
 import typing
 
 
@@ -106,3 +107,12 @@ class SimilarGroup:
         father2 = self.find(stu_id2)
 
         self.__similar_set[father1] = father2
+
+
+class SimilarReason(enum.Enum):
+    """
+    关闭雷同的原因的 enum 类型
+    """
+    SIMILAR_SIZE = enum.auto()
+    SIMILAR_NAME = enum.auto()
+    SIMILAR_STRUCT = enum.auto()

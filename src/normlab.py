@@ -13,6 +13,7 @@ class NormLab:
         self.__lab_id = pathlib.Path(self.__homeworks_path).name.split("-")[0]
         self.__result_dir = result_dir + "/" + self.__lab_id  # 结果输出路径
         self.__student_repo = student_repo
+        self.__similar_group = student.SimilarGroup(self.__student_repo)  # 判断是否有相同情况的并查集
 
     def extract_source_homework(self) -> None:
         """
