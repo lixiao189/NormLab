@@ -144,7 +144,31 @@ class NormLab:
                         shutil.rmtree(os.path.join(root, temp_name))
 
     def generate_similar_report(self) -> None:
-        pass
+        student_has_homework: typing.List[student.Student] = []
+
+        # 找出所有交了作业的人
+        for item in os.listdir(self.__result_dir):
+            if pathlib.Path(os.path.join(self.__result_dir, item)).is_dir():
+                tmp_student = self.__student_repo.get_student(item.split("-")[1])
+                student_has_homework.append(tmp_student)
+
+        # 两两比对
+        for s1 in student_has_homework:
+            for s2 in student_has_homework:
+                if s1.get_stu_id() == s2.get_stu_id():
+                    continue
+                s1_homework_dir = self.__lab_id + "-" + s1.get_stu_id() + "-" + s1.get_short_name()
+                s2_homework_dir = self.__lab_id + "-" + s2.get_stu_id() + "-" + s2.get_short_name()
+
+                # 开始比较两个人的作业
+                file_size: typing.Dict[str, int] = dict()
+                for root, dirs, files in os.walk(os.path.join(self.__result_dir, s1_homework_dir)):
+                    for filename in files:
+                        print("s1:" + filename)
+
+                for root, dirs, files in os.walk(os.path.join(self.__result_dir, s2_homework_dir)):
+                    for filename in files:
+                        print("s2:" + filename)
 
     def get_homeworks_path(self) -> str:
         """

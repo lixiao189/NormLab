@@ -74,3 +74,35 @@ class CSVStudentRepo(AbstractStudentRepo):
             students_list.append(self.__students[key])
 
         return students_list
+
+
+class SimilarGroup:
+    """
+    一个并查集用来合并抄袭的一组人
+    """
+
+    def __init__(self, stu_repo: AbstractStudentRepo) -> None:
+        """
+        初始化并查集
+        """
+        self.__similar_set: typing.Dict[str, str] = dict()  # 存储这一组中的头头的 id
+
+        for student in stu_repo.get_all_students():
+            self.__similar_set[student.get_stu_id()] = student.get_stu_id()
+
+    def find(self, stu_id: str) -> str:
+        """
+        并查集的查找
+        """
+        if self.__similar_set[stu_id] != stu_id:
+            self.__similar_set[stu_id] = self.find(self.__similar_set[stu_id])
+        return self.__similar_set[stu_id]
+
+    def union(self, stu_id1, stu_id2) -> None:
+        """
+        合并两个人
+        """
+        father1 = self.find(stu_id1)
+        father2 = self.find(stu_id2)
+
+        self.__similar_set[father1] = father2
