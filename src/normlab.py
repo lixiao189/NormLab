@@ -130,7 +130,18 @@ class NormLab:
                         shutil.move(os.path.join(root, report_file_name), self.__result_dir)
 
     def remove_repetitive_dir(self) -> None:
-        pass
+        """
+        处理 A / A 这种情况的文件夹
+        """
+        for root, dirs, files in os.walk(self.__result_dir):
+            for dirname in dirs:
+                son_dirs = os.listdir(os.path.join(root, dirname))
+                if len(son_dirs) == 1:  # 如果只有一个子文件夹
+                    if dirname == son_dirs[0]:  # 子文件夹和当前文件夹名称相同
+                        temp_name = "dir_deleted"
+                        os.rename(os.path.join(root, dirname), os.path.join(root, temp_name))
+                        shutil.move(os.path.join(root, temp_name, son_dirs[0]), os.path.join(root))
+                        shutil.rmtree(os.path.join(root, temp_name))
 
     def get_homeworks_path(self) -> str:
         """
@@ -170,3 +181,4 @@ if __name__ == '__main__':
     normlab_obj.extract_source_homework()
     normlab_obj.delete_extra_files()
     normlab_obj.move_reports()
+    normlab_obj.remove_repetitive_dir()
