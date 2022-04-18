@@ -50,6 +50,8 @@ def test_delete_extra_files(normlab_obj: NormLab) -> None:
     """
     检测是否还有多余的文件夹
     """
+    normlab_obj.delete_extra_files()
+
     has_extra_dir = False
     extra_dir_list: typing.List[str] = [
         ".idea",
@@ -62,3 +64,7 @@ def test_delete_extra_files(normlab_obj: NormLab) -> None:
                 has_extra_dir = True
 
     assert not has_extra_dir
+
+
+def test_move_reports(normlab_obj: NormLab) -> None:
+    normlab_obj.move_reports()

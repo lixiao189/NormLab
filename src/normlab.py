@@ -95,6 +95,27 @@ class NormLab:
                     if file_should_delete in filename:
                         os.remove(os.path.join(root, filename))
 
+        # 处理有人上传了两份报告的情况
+        homework_list = os.listdir(self.__result_dir)
+        for homework_dir in homework_list:  # 开始对每个人的作业文件进行处理
+            docx_file_list = []
+            # 查找所有的 docx 文件
+            for root, dirs, files in os.walk(os.path.join(self.__result_dir, homework_dir)):
+                for filename in files:
+                    if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
+                        docx_file_list.append(os.path.join(root, filename))
+
+            # 删除多余的 docx 文件
+            if len(docx_file_list) > 1:
+                for i in range(0, len(docx_file_list) - 1):
+                    os.remove(docx_file_list[i])
+
+    def move_reports(self) -> None:
+        for root, dirs, files in os.walk(self.__result_dir):
+            for filename in files:
+                if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
+                    print(os.path.join(root, filename))  # debug
+
     def get_homeworks_path(self) -> str:
         """
         获取作业源文件路径
