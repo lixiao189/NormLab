@@ -225,7 +225,10 @@ class NormLab:
 
 
 if __name__ == '__main__':
-    homeworks_file_path = sys.argv[1]  # 源文件路径
+    if len(sys.argv) > 1:
+        homeworks_file_path = sys.argv[1]  # 源文件路径
+    else:
+        homeworks_file_path = '../data/Lab03-JUnit for Unit Test.zip'
     homeworks_result_dir = "../result"  # 父目录存储结果
     students_list_path = "../data/students_list.csv"
 
