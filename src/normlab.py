@@ -158,6 +158,16 @@ class NormLab:
                         dirs.append(father_dir_name)  # 添加新文件夹进入 dirs 列表，让 os.walk 函数遍历
                         shutil.rmtree(os.path.join(root, temp_name))
 
+    def remove_empty_dir(self) -> None:
+        """
+        删除空文件夹
+        """
+        for root, dirs, files in os.walk(self.__result_dir):
+            for dirname in dirs:
+                son_dirs = os.listdir(os.path.join(root, dirname))
+                if len(son_dirs) == 0:
+                    shutil.rmtree(os.path.join(root, dirname))
+
     def generate_similar_report(self) -> None:
         student_has_homework: typing.List[student.Student] = []
 
@@ -256,4 +266,6 @@ if __name__ == '__main__':
         normlab_obj.delete_extra_files()
         normlab_obj.move_reports()
         normlab_obj.remove_repetitive_dir()
+        normlab_obj.remove_empty_dir()
+
         # normlab_obj.generate_similar_report()
