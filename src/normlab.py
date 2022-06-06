@@ -1,3 +1,5 @@
+from thefuzz import fuzz
+
 import os
 import pathlib
 import shutil
@@ -135,16 +137,25 @@ class NormLab:
 
     def remove_repetitive_dir(self) -> None:
         """
-        处理 A / A 这种情况的文件夹
+        处理 A / A 这种情况的文件夹 (相似文件夹也要处理)
         """
         for root, dirs, files in os.walk(self.__result_dir):
             for dirname in dirs:
                 son_dirs = os.listdir(os.path.join(root, dirname))
                 if len(son_dirs) == 1:  # 如果只有一个子文件夹
-                    if dirname == son_dirs[0]:  # 子文件夹和当前文件夹名称相同
+                    # debug
+                    print(dirname, son_dirs[0])
+                    print(fuzz.ratio(dirname, son_dirs[0]))
+
+                    if fuzz.ratio(dirname, son_dirs[0]) >= 50:  # 相似度在 50% 以上
+                        # delete file
+                        father_dir_name = dirname
                         temp_name = "dir_deleted"
+
                         os.rename(os.path.join(root, dirname), os.path.join(root, temp_name))
                         shutil.move(os.path.join(root, temp_name, son_dirs[0]), os.path.join(root))
+                        os.rename(os.path.join(root, son_dirs[0]), os.path.join(root, father_dir_name))
+                        dirs.append(father_dir_name)  # 添加新文件夹进入 dirs 列表，让 os.walk 函数遍历
                         shutil.rmtree(os.path.join(root, temp_name))
 
     def generate_similar_report(self) -> None:
@@ -245,4 +256,4 @@ if __name__ == '__main__':
         normlab_obj.delete_extra_files()
         normlab_obj.move_reports()
         normlab_obj.remove_repetitive_dir()
-        normlab_obj.generate_similar_report()
+        # normlab_obj.generate_similar_report()
