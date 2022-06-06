@@ -143,10 +143,6 @@ class NormLab:
             for dirname in dirs:
                 son_dirs = os.listdir(os.path.join(root, dirname))
                 if len(son_dirs) == 1:  # 如果只有一个子文件夹
-                    # debug
-                    print(dirname, son_dirs[0])
-                    print(fuzz.ratio(dirname, son_dirs[0]))
-
                     if fuzz.ratio(dirname, son_dirs[0]) >= 50:  # 相似度在 50% 以上
                         # delete file
                         father_dir_name = dirname
