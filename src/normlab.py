@@ -1,3 +1,5 @@
+import contextlib
+import itertools
 from thefuzz import fuzz
 
 import os
@@ -15,9 +17,12 @@ class NormLab:
                  reporter: student.AbstractSimilarReporter) -> None:
         self.__homeworks_path = homeworks_path
         self.__lab_id = pathlib.Path(self.__homeworks_path).name.split("-")[0]
-        self.__result_dir = result_dir + "/" + pathlib.Path(self.__homeworks_path).name.split(".")[0]  # 结果输出路径
+        self.__result_dir = f"{result_dir}/" + \
+            pathlib.Path(self.__homeworks_path).name.split(".")[0]
+
         self.__student_repo = student_repo
-        self.__similar_group = student.SimilarGroup(self.__student_repo)  # 判断是否有相同情况的并查集
+        self.__similar_group = student.SimilarGroup(
+            self.__student_repo)  # 判断是否有相同情况的并查集
         self.__similar_reporter = reporter
 
     def __enter__(self):
@@ -37,10 +42,11 @@ class NormLab:
         homeworks_extractor = None
         homeworks_path_obj = pathlib.Path(self.__homeworks_path)
 
-        if homeworks_path_obj.suffix == ".zip":
-            homeworks_extractor = extractor.UnZip
-        elif homeworks_path_obj.suffix == ".rar":
+        if homeworks_path_obj.suffix == ".rar":
             homeworks_extractor = extractor.UnRar
+
+        elif homeworks_path_obj.suffix == ".zip":
+            homeworks_extractor = extractor.UnZip
 
         # 解压原始文件
         with homeworks_extractor(self.__homeworks_path, self.__result_dir) as e:
@@ -53,7 +59,7 @@ class NormLab:
                 path_obj = pathlib.Path(os.path.join(root, file))
                 student_id = path_obj.name.split('-')[0]
                 student_obj = self.__student_repo.get_student(student_id)
-                student_dir_path = root + "/" + self.__lab_id + "-" + student_id + "-" + student_obj.get_short_name()
+                student_dir_path = f"{root}/{self.__lab_id}-{student_id}-{student_obj.get_short_name()}"
 
                 # 开始解压
                 if path_obj.suffix == ".zip":
@@ -80,9 +86,8 @@ class NormLab:
                 else:
                     continue
 
-                with homeworks_extractor(os.path.join(root, file),
-                                         root + "/" + path_obj.name.split(".")[0]) as e:
-                    dirs.append(root + "/" + path_obj.name.split(".")[0])
+                with homeworks_extractor(os.path.join(root, file), f"{root}/" + path_obj.name.split(".")[0]) as e:
+                    dirs.append(f"{root}/" + path_obj.name.split(".")[0])
                     e.extract()
 
                 os.remove(os.path.join(root, file))
@@ -106,10 +111,9 @@ class NormLab:
                 if dirname in extra_dir_list:
                     shutil.rmtree(os.path.join(root, dirname))
 
-            for filename in files:
-                for file_should_delete in extra_file_list:
-                    if file_should_delete in filename:
-                        os.remove(os.path.join(root, filename))
+            for filename, file_should_delete in itertools.product(files, extra_file_list):
+                if file_should_delete in filename:
+                    os.remove(os.path.join(root, filename))
 
         # 处理有人上传了两份报告的情况
         homework_list = os.listdir(self.__result_dir)
@@ -117,13 +121,12 @@ class NormLab:
             docx_file_list = []
             # 查找所有的 docx 文件
             for root, dirs, files in os.walk(os.path.join(self.__result_dir, homework_dir)):
-                for filename in files:
-                    if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
-                        docx_file_list.append(os.path.join(root, filename))
+                docx_file_list.extend(os.path.join(root, filename) for filename in files if pathlib.Path(
+                    os.path.join(root, filename)).suffix == ".docx")
 
             # 删除多余的 docx 文件
             if len(docx_file_list) > 1:
-                for i in range(0, len(docx_file_list) - 1):
+                for i in range(len(docx_file_list) - 1):
                     os.remove(docx_file_list[i])
 
     def move_reports(self) -> None:
@@ -136,14 +139,16 @@ class NormLab:
             # 获取学生对象
             student_id = homework_dir.split("-")[1]
             student_obj = self.__student_repo.get_student(student_id)
-            report_file_name = self.__lab_id + "-" + student_id + "-" + student_obj.get_short_name() + ".docx"
+            report_file_name = f"{self.__lab_id}-{student_id}-{student_obj.get_short_name()}.docx"
 
             # 处理报告 docx 文件
             for root, dirs, files in os.walk(os.path.join(self.__result_dir, homework_dir)):
                 for filename in files:
                     if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
-                        os.rename(os.path.join(root, filename), os.path.join(root, report_file_name))
-                        shutil.move(os.path.join(root, report_file_name), self.__result_dir)
+                        os.rename(os.path.join(root, filename),
+                                  os.path.join(root, report_file_name))
+                        shutil.move(os.path.join(
+                            root, report_file_name), self.__result_dir)
 
     def remove_repetitive_dir(self) -> None:
         """
@@ -152,17 +157,22 @@ class NormLab:
         for root, dirs, files in os.walk(self.__result_dir):
             for dirname in dirs:
                 son_dirs = os.listdir(os.path.join(root, dirname))
-                if len(son_dirs) == 1 and os.path.isdir(os.path.join(root, dirname, son_dirs[0])):  # 如果只有一个子文件夹
-                    if fuzz.ratio(dirname, son_dirs[0]) >= 50:  # 相似度在 50% 以上
-                        # delete file
-                        father_dir_name = dirname
-                        temp_name = "dir_deleted"
+                # 如果只有一个子文件夹
+                if len(son_dirs) == 1 and os.path.isdir(os.path.join(root, dirname, son_dirs[0])) \
+                        and fuzz.ratio(dirname, son_dirs[0]) >= 50:
+                    # delete file
+                    father_dir_name = dirname
+                    temp_name = "dir_deleted"
 
-                        os.rename(os.path.join(root, dirname), os.path.join(root, temp_name))
-                        shutil.move(os.path.join(root, temp_name, son_dirs[0]), os.path.join(root))
-                        os.rename(os.path.join(root, son_dirs[0]), os.path.join(root, father_dir_name))
-                        dirs.append(father_dir_name)  # 添加新文件夹进入 dirs 列表，让 os.walk 函数遍历
-                        shutil.rmtree(os.path.join(root, temp_name))
+                    os.rename(os.path.join(root, father_dir_name),
+                              os.path.join(root, temp_name))
+                    shutil.move(os.path.join(root, temp_name,
+                                son_dirs[0]), os.path.join(root))
+                    os.rename(os.path.join(root, son_dirs[0]), os.path.join(
+                        root, father_dir_name))
+                    # 添加新文件夹进入 dirs 列表，让 os.walk 函数遍历
+                    dirs.append(father_dir_name)
+                    shutil.rmtree(os.path.join(root, temp_name))
 
     def remove_empty_dir(self) -> None:
         """
@@ -180,7 +190,8 @@ class NormLab:
         # 找出所有交了作业的人
         for item in os.listdir(self.__result_dir):
             if pathlib.Path(os.path.join(self.__result_dir, item)).is_dir():
-                tmp_student = self.__student_repo.get_student(item.split("-")[1])
+                tmp_student = self.__student_repo.get_student(
+                    item.split("-")[1])
                 student_has_homework.append(tmp_student)
 
         # 两两比对
@@ -188,16 +199,18 @@ class NormLab:
             for s2 in student_has_homework:
                 if s1.get_stu_id() == s2.get_stu_id():
                     continue
-                s1_homework_dir = self.__lab_id + "-" + s1.get_stu_id() + "-" + s1.get_short_name()
-                s2_homework_dir = self.__lab_id + "-" + s2.get_stu_id() + "-" + s2.get_short_name()
+                s1_homework_dir = f"{self.__lab_id}-{s1.get_stu_id()}-{s1.get_short_name()}"
+
+                s2_homework_dir = f"{self.__lab_id}-{s2.get_stu_id()}-{s2.get_short_name()}"
 
                 # 开始比较两个人的作业
                 similar_file_name = True
                 similar_file_size = True
-                file_size: typing.Dict[str, int] = dict()
+                file_size: typing.Dict[str, int] = {}
                 for root, dirs, files in os.walk(os.path.join(self.__result_dir, s1_homework_dir)):
                     for filename in files:
-                        file_size[filename] = os.stat(os.path.join(root, filename)).st_size
+                        file_size[filename] = os.stat(
+                            os.path.join(root, filename)).st_size
 
                 for root, dirs, files in os.walk(os.path.join(self.__result_dir, s2_homework_dir)):
                     for filename in files:
@@ -216,12 +229,10 @@ class NormLab:
 
         rows = []
         for key in self.__similar_group.get_similar_reason():
-            row = []
-            if not len(self.__similar_group.get_similar_reason()[key]) == 0:
-                row.append(key)
-                for reason in self.__similar_group.get_similar_reason()[key]:
-                    row.append(reason)
-
+            if len(self.__similar_group.get_similar_reason()[key]) != 0:
+                row = [key]
+                row.extend(
+                    iter(self.__similar_group.get_similar_reason()[key]))
                 rows.append(row)
 
         self.__similar_reporter.generate_reporter(rows)
@@ -269,11 +280,8 @@ if __name__ == '__main__':
     homeworks_result_dir = "../result"  # 父目录存储结果
     students_list_path = "../data/students_list.csv"
 
-    try:
+    with contextlib.suppress(FileNotFoundError):
         shutil.rmtree(homeworks_result_dir)  # 删除之前的结果
-    except FileNotFoundError:
-        pass
-
     with NormLab(
             homeworks_file_path,
             homeworks_result_dir,

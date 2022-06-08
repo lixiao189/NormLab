@@ -60,7 +60,7 @@ class CSVStudentRepo(AbstractStudentRepo):
     """
 
     def __init__(self, csv_path: str) -> None:
-        self.__students: typing.Dict[str, Student] = dict()
+        self.__students: typing.Dict[str, Student] = {}
         self.__csv_path: str = csv_path
 
     def __enter__(self) -> AbstractStudentRepo:
@@ -81,11 +81,7 @@ class CSVStudentRepo(AbstractStudentRepo):
         return self.__students[stu_id]
 
     def get_all_students(self) -> typing.List[Student]:
-        students_list = []
-        for key in self.__students:
-            students_list.append(self.__students[key])
-
-        return students_list
+        return [self.__students[key] for key in self.__students]
 
 
 class AbstractSimilarReporter(abc.ABC):
@@ -110,7 +106,7 @@ class CSVSimilarReporter(AbstractSimilarReporter):
     def __init__(self, output_path: str):
         pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
 
-        file_path = output_path + "/SimilarWorksReport.csv"
+        file_path = f"{output_path}/SimilarWorksReport.csv"
         file = pathlib.Path(file_path)
         file.touch(exist_ok=True)
 
@@ -137,8 +133,8 @@ class SimilarGroup:
         """
         初始化并查集
         """
-        self.__similar_set: typing.Dict[str, str] = dict()  # 存储这一组中的头头的 id
-        self.__similar_reason: typing.Dict[str, set] = dict()  # 存储每个人雷同的原因
+        self.__similar_set: typing.Dict[str, str] = {}
+        self.__similar_reason: typing.Dict[str, set] = {}
 
         for student in stu_repo.get_all_students():
             self.__similar_set[student.get_stu_id()] = student.get_stu_id()

@@ -2,6 +2,7 @@ import os
 import zipfile
 import abc
 
+import contextlib
 import rarfile
 
 
@@ -49,21 +50,16 @@ class UnZip(Extractor):
             self.__zip_file.extract(file, self._target_path)
 
             # 修复乱码
-            try:
+            with contextlib.suppress(UnicodeDecodeError):
                 new_name = file.encode("cp437")
                 new_name = new_name.decode("utf-8")
-                os.rename(self._target_path + "/" + file,
-                          self._target_path + "/" + new_name)
-            except UnicodeDecodeError:
-                pass
-
-            try:
+                os.rename(f"{self._target_path}/{file}",
+                          f"{self._target_path}/{new_name}")
+            with contextlib.suppress(UnicodeDecodeError):
                 new_name = file.encode("cp437")
                 new_name = new_name.decode("gbk")
-                os.rename(self._target_path + "/" + file,
-                          self._target_path + "/" + new_name)
-            except UnicodeDecodeError:
-                pass
+                os.rename(f"{self._target_path}/{file}",
+                          f"{self._target_path}/{new_name}")
 
 
 class UnRar(Extractor):
