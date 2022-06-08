@@ -216,6 +216,13 @@ class NormLab:
 
         self.__similar_reporter.generate_reporter(rows)
 
+    def handle_homework(self) -> None:
+        self.extract_source_homework()
+        self.delete_extra_files()
+        self.move_reports()
+        self.remove_repetitive_dir()
+        self.remove_empty_dir()
+
     def get_homeworks_path(self) -> str:
         """
         获取作业源文件路径
@@ -257,11 +264,6 @@ if __name__ == '__main__':
     with student.CSVStudentRepo(students_list_path) as repo, \
             student.CSVSimilarReporter(homeworks_result_dir) as similar_reporter:
         normlab_obj = NormLab(homeworks_file_path, homeworks_result_dir, repo, similar_reporter)
-
-        normlab_obj.extract_source_homework()
-        normlab_obj.delete_extra_files()
-        normlab_obj.move_reports()
-        normlab_obj.remove_repetitive_dir()
-        normlab_obj.remove_empty_dir()
+        normlab_obj.handle_homework()  # 处理作业压缩包
 
         # normlab_obj.generate_similar_report()
