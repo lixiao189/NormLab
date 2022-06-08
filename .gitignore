@@ -1,8 +1,7 @@
 venv
 result
-out*
+out
 __pycache__
 .pytest_cache
-result
 .idea
 .vscode
