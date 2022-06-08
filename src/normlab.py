@@ -20,6 +20,16 @@ class NormLab:
         self.__similar_group = student.SimilarGroup(self.__student_repo)  # 判断是否有相同情况的并查集
         self.__similar_reporter = reporter
 
+    def __enter__(self):
+        self.__student_repo.__enter__()
+        self.__similar_reporter.__enter__()
+
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.__student_repo.__exit__(exc_type, exc_val, exc_tb)
+        self.__similar_reporter.__exit__(exc_type, exc_val, exc_tb)
+
     def extract_source_homework(self) -> None:
         """
         解压作业
@@ -217,6 +227,9 @@ class NormLab:
         self.__similar_reporter.generate_reporter(rows)
 
     def handle_homework(self) -> None:
+        """
+        处理所有的作业压缩包的任务
+        """
         self.extract_source_homework()
         self.delete_extra_files()
         self.move_reports()
@@ -261,9 +274,12 @@ if __name__ == '__main__':
     except FileNotFoundError:
         pass
 
-    with student.CSVStudentRepo(students_list_path) as repo, \
-            student.CSVSimilarReporter(homeworks_result_dir) as similar_reporter:
-        normlab_obj = NormLab(homeworks_file_path, homeworks_result_dir, repo, similar_reporter)
+    with NormLab(
+            homeworks_file_path,
+            homeworks_result_dir,
+            student.CSVStudentRepo(students_list_path),
+            student.CSVSimilarReporter(homeworks_result_dir)
+    ) as normlab_obj:
         normlab_obj.handle_homework()  # 处理作业压缩包
 
         # normlab_obj.generate_similar_report()
