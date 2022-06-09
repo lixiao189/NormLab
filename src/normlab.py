@@ -58,8 +58,12 @@ class NormLab:
                 # 解压当前文件
                 path_obj = pathlib.Path(os.path.join(root, file))
                 student_id = path_obj.name.split('-')[0]
-                student_obj = self.__student_repo.get_student(student_id)
-                student_dir_path = f"{root}/{self.__lab_id}-{student_id}-{student_obj.get_short_name()}"
+
+                try:
+                    student_obj = self.__student_repo.get_student(student_id)
+                    student_dir_path = f"{root}/{self.__lab_id}-{student_id}-{student_obj.get_short_name()}"
+                except KeyError:
+                    student_dir_path = ""
 
                 # 开始解压
                 if path_obj.suffix == ".zip":
@@ -138,8 +142,12 @@ class NormLab:
         for homework_dir in homework_list:
             # 获取学生对象
             student_id = homework_dir.split("-")[1]
-            student_obj = self.__student_repo.get_student(student_id)
-            report_file_name = f"{self.__lab_id}-{student_id}-{student_obj.get_short_name()}.docx"
+
+            try:
+                student_obj = self.__student_repo.get_student(student_id)
+                report_file_name = f"{self.__lab_id}-{student_id}-{student_obj.get_short_name()}.docx"
+            except KeyError:
+                continue
 
             # 处理报告 docx 文件
             for root, dirs, files in os.walk(os.path.join(self.__result_dir, homework_dir)):
@@ -185,57 +193,7 @@ class NormLab:
                     shutil.rmtree(os.path.join(root, dirname))
 
     def generate_similar_report(self) -> None:
-        student_has_homework: typing.List[student.Student] = []
-
-        # 找出所有交了作业的人
-        for item in os.listdir(self.__result_dir):
-            if pathlib.Path(os.path.join(self.__result_dir, item)).is_dir():
-                tmp_student = self.__student_repo.get_student(
-                    item.split("-")[1])
-                student_has_homework.append(tmp_student)
-
-        # 两两比对
-        for s1 in student_has_homework:
-            for s2 in student_has_homework:
-                if s1.get_stu_id() == s2.get_stu_id():
-                    continue
-                s1_homework_dir = f"{self.__lab_id}-{s1.get_stu_id()}-{s1.get_short_name()}"
-
-                s2_homework_dir = f"{self.__lab_id}-{s2.get_stu_id()}-{s2.get_short_name()}"
-
-                # 开始比较两个人的作业
-                similar_file_name = True
-                similar_file_size = True
-                file_size: typing.Dict[str, int] = {}
-                for root, dirs, files in os.walk(os.path.join(self.__result_dir, s1_homework_dir)):
-                    for filename in files:
-                        file_size[filename] = os.stat(
-                            os.path.join(root, filename)).st_size
-
-                for root, dirs, files in os.walk(os.path.join(self.__result_dir, s2_homework_dir)):
-                    for filename in files:
-                        if filename not in file_size:
-                            similar_file_name = False
-                        elif file_size[filename] != os.stat(os.path.join(root, filename)).st_size:
-                            # 如果同名文件文件尺寸不一样
-                            similar_file_size = False
-
-                if similar_file_size:
-                    self.__similar_group.union_with_reason(s1.get_stu_id(), s2.get_stu_id(),
-                                                           student.SimilarReason.SIMILAR_SIZE)
-                if similar_file_name:
-                    self.__similar_group.union_with_reason(s1.get_stu_id(), s2.get_stu_id(),
-                                                           student.SimilarReason.SIMILAR_NAME)
-
-        rows = []
-        for key in self.__similar_group.get_similar_reason():
-            if len(self.__similar_group.get_similar_reason()[key]) != 0:
-                row = [key]
-                row.extend(
-                    iter(self.__similar_group.get_similar_reason()[key]))
-                rows.append(row)
-
-        self.__similar_reporter.generate_reporter(rows)
+        pass
 
     def handle_homework(self) -> None:
         """
