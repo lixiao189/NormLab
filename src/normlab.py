@@ -123,16 +123,21 @@ class NormLab:
         # 处理有人上传了两份报告的情况
         homework_list = os.listdir(self.__result_dir)
         for homework_dir in homework_list:  # 开始对每个人的作业文件进行处理
-            docx_file_list = []
+            docx_file_count: typing.Dict[str, int] = {}
+            docx_file_should_delete_list: typing.List[str] = []
             # 查找所有的 docx 文件
             for root, dirs, files in os.walk(os.path.join(self.__result_dir, homework_dir)):
-                docx_file_list.extend(os.path.join(root, filename) for filename in files if pathlib.Path(
-                    os.path.join(root, filename)).suffix == ".docx")
+                for filename in files:
+                    if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
+                        try:
+                            docx_file_count[filename] += 1
+                            docx_file_should_delete_list.append(os.path.join(root, filename))
+                        except KeyError:
+                            docx_file_count[filename] = 1
 
-            # 删除多余的 docx 文件
-            if len(docx_file_list) > 1:
-                for i in range(len(docx_file_list) - 1):
-                    os.remove(docx_file_list[i])
+            # 删除重复的 docx 文件
+            for file_path in docx_file_should_delete_list:
+                os.remove(file_path)
 
     def move_reports(self) -> None:
         """
