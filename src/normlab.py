@@ -63,7 +63,7 @@ class NormLab:
                     student_obj = self.__student_repo.get_student(student_id)
                     student_dir_path = f"{root}/{self.__lab_id}-{student_id}-{student_obj.get_short_name()}"
                 except KeyError:
-                    student_dir_path = ""
+                    student_dir_path = root
 
                 # 开始解压
                 if path_obj.suffix == ".zip":
