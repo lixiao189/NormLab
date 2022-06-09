@@ -1,4 +1,6 @@
 import os
+import shutil
+import typing
 import zipfile
 import abc
 
@@ -16,7 +18,7 @@ class Extractor(abc.ABC):
         self._target_path = target_path  # 压缩包目标路径
 
     @abc.abstractmethod
-    def __enter__(self) -> None:
+    def __enter__(self):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -44,22 +46,16 @@ class UnZip(Extractor):
         self.__zip_file.close()
 
     def extract(self) -> None:  # 解压方法
-        file_list = self.__zip_file.namelist()
+        file_list = self.__zip_file.infolist()
 
         for file in file_list:
-            self.__zip_file.extract(file, self._target_path)
-
             # 修复乱码
-            with contextlib.suppress(UnicodeDecodeError):
-                new_name = file.encode("cp437")
-                new_name = new_name.decode("utf-8")
-                os.rename(f"{self._target_path}/{file}",
-                          f"{self._target_path}/{new_name}")
-            with contextlib.suppress(UnicodeDecodeError):
-                new_name = file.encode("cp437")
-                new_name = new_name.decode("gbk")
-                os.rename(f"{self._target_path}/{file}",
-                          f"{self._target_path}/{new_name}")
+            with contextlib.suppress(UnicodeDecodeError, UnicodeEncodeError):
+                file.filename = file.filename.encode("cp437").decode("utf-8")
+            with contextlib.suppress(UnicodeDecodeError, UnicodeEncodeError):
+                file.filename = file.filename.encode("cp437").decode("gbk")
+
+            self.__zip_file.extract(file, self._target_path)
 
 
 class UnRar(Extractor):
@@ -82,3 +78,16 @@ class UnRar(Extractor):
 
         for file in file_list:
             self.__rar_file.extract(file, self._target_path)
+
+
+class ExtractorFactory:
+    def __init__(self, source_path: str, target_path: str):
+        self.__source_path = source_path
+        self.__target_path = target_path
+
+    def get_extractor(self) -> Extractor:
+        if self.__source_path.split(".")[-1] == "zip":
+            return UnZip(self.__source_path, self.__target_path)
+
+        elif self.__source_path.split(".")[-1] == "rar":
+            return UnRar(self.__source_path, self.__target_path)
