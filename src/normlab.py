@@ -18,7 +18,7 @@ class NormLab:
         self.__homeworks_path = homeworks_path
         self.__lab_id = pathlib.Path(self.__homeworks_path).name.split("-")[0]
         self.__result_dir = f"{result_dir}/" + \
-            pathlib.Path(self.__homeworks_path).name.split(".")[0]
+                            pathlib.Path(self.__homeworks_path).name.split(".")[0]
 
         self.__student_repo = student_repo
         self.__similar_group = student.SimilarGroup(
@@ -104,6 +104,7 @@ class NormLab:
             ".idea",
             ".vscode",
             "target",
+            "__MACOSX",
         ]
         extra_file_list: typing.List[str] = [
             "计算机科学与技术学院-软件工程（留学生）-2019软件工程（留学生）",
@@ -175,7 +176,7 @@ class NormLab:
                     os.rename(os.path.join(root, father_dir_name),
                               os.path.join(root, temp_name))
                     shutil.move(os.path.join(root, temp_name,
-                                son_dirs[0]), os.path.join(root))
+                                             son_dirs[0]), os.path.join(root))
                     os.rename(os.path.join(root, son_dirs[0]), os.path.join(
                         root, father_dir_name))
                     # 添加新文件夹进入 dirs 列表，让 os.walk 函数遍历
