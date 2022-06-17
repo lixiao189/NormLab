@@ -175,7 +175,8 @@ class NormLab:
         """
         处理 A / A 这种情况的文件夹 (相似文件夹也要处理)
         """
-        for root, dirs, files in os.walk(self.__result_dir):
+        result_dir_root = str(pathlib.Path(self.__result_dir).parent)
+        for root, dirs, files in os.walk(result_dir_root):
             for dirname in dirs:
                 son_dirs = os.listdir(os.path.join(root, dirname))
                 # 如果只有一个子文件夹
