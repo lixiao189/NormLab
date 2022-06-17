@@ -46,17 +46,8 @@ class NormLab:
         """
         解压作业
         """
-        homeworks_extractor = None
-        homeworks_path_obj = pathlib.Path(self.__homeworks_path)
-
-        if homeworks_path_obj.suffix == ".rar":
-            homeworks_extractor = extractor.UnRar
-
-        elif homeworks_path_obj.suffix == ".zip":
-            homeworks_extractor = extractor.UnZip
-
         # 解压原始文件
-        with homeworks_extractor(self.__homeworks_path, self.__result_dir) as e:
+        with extractor.ExtractorFactory(self.__homeworks_path, self.__result_dir).get_extractor() as e:
             e.extract()
 
         # 对每个学生的文件进行解压
@@ -73,14 +64,9 @@ class NormLab:
                     student_dir_path = root
 
                 # 开始解压
-                if path_obj.suffix == ".zip":
-                    homeworks_extractor = extractor.UnZip
-                elif path_obj.suffix == ".rar":
-                    homeworks_extractor = extractor.UnRar
-                else:
+                if not extractor.is_archive(os.path.join(root, file)):
                     continue
-                with homeworks_extractor(os.path.join(root, file),
-                                         student_dir_path) as e:
+                with extractor.ExtractorFactory(os.path.join(root, file), student_dir_path).get_extractor() as e:
                     e.extract()
 
                 os.remove(os.path.join(root, file))
@@ -90,14 +76,11 @@ class NormLab:
             for file in files:
                 # 解压当前文件
                 path_obj = pathlib.Path(os.path.join(root, file))
-                if path_obj.suffix == ".zip":
-                    homeworks_extractor = extractor.UnZip
-                elif path_obj.suffix == ".rar":
-                    homeworks_extractor = extractor.UnRar
-                else:
+                if not extractor.is_archive(os.path.join(root, file)):
                     continue
 
-                with homeworks_extractor(os.path.join(root, file), f"{root}/" + path_obj.name.split(".")[0]) as e:
+                with extractor.ExtractorFactory(os.path.join(root, file),
+                                                f"{root}/{path_obj.name.split('.')[0]}").get_extractor() as e:
                     dirs.append(f"{root}/" + path_obj.name.split(".")[0])
                     e.extract()
 

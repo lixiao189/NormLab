@@ -1,6 +1,4 @@
-import os
-import shutil
-import typing
+import pathlib
 import zipfile
 import abc
 
@@ -91,3 +89,15 @@ class ExtractorFactory:
 
         elif self.__source_path.split(".")[-1] == "rar":
             return UnRar(self.__source_path, self.__target_path)
+
+
+def is_archive(file_path: str) -> bool:
+    """
+    判断是否是压缩包
+    """
+    archive_file_suffix = [
+        ".zip",
+        ".rar",
+    ]
+    path_obj = pathlib.Path(file_path)
+    return path_obj.suffix in archive_file_suffix
