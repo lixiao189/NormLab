@@ -13,8 +13,11 @@ import student
 
 
 class NormLab:
-    def __init__(self, homeworks_path: str, result_dir: str, student_repo: student.AbstractStudentRepo,
-                 reporter: student.AbstractSimilarReporter) -> None:
+    def __init__(self,
+                 homeworks_path: str,
+                 result_dir: str,
+                 student_repo: student.AbstractStudentRepo,
+                 reporter: typing.Optional[student.AbstractSimilarReporter]) -> None:
         self.__homeworks_path = homeworks_path
         self.__lab_id = pathlib.Path(self.__homeworks_path).name.split("-")[0]
         self.__result_dir = f"{result_dir}/" + \
@@ -27,13 +30,17 @@ class NormLab:
 
     def __enter__(self):
         self.__student_repo.__enter__()
-        self.__similar_reporter.__enter__()
+
+        if self.__similar_reporter is not None:
+            self.__similar_reporter.__enter__()
 
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.__student_repo.__exit__(exc_type, exc_val, exc_tb)
-        self.__similar_reporter.__exit__(exc_type, exc_val, exc_tb)
+
+        if self.__similar_reporter is not None:
+            self.__similar_reporter.__exit__(exc_type, exc_val, exc_tb)
 
     def extract_source_homework(self) -> None:
         """
@@ -250,8 +257,6 @@ if __name__ == '__main__':
             homeworks_file_path,
             homeworks_result_dir,
             student.CSVStudentRepo(students_list_path),
-            student.CSVSimilarReporter(homeworks_result_dir)
+            None
     ) as normlab_obj:
         normlab_obj.handle_homework()  # 处理作业压缩包
-
-        # normlab_obj.generate_similar_report()
