@@ -50,6 +50,19 @@ class NormLab:
         e = extractor.ExtractPipeline(self.__homeworks_path, self.__result_dir)
         e.extract_all()
 
+    def rename_student_file_dir(self) -> None:
+        """
+        重命名学生文件夹
+        """
+        for student_dir in os.listdir(self.__result_dir):
+            if fuzz.ratio(student_dir, 'L201926630102-DENNISERTANDY') >= 50 and len(student_dir.split("-")) == 2:
+                # 找到学生文件夹以后开始处理
+                student_id = student_dir.split('-')[0]
+                student_shortname = self.__student_repo.get_student(student_id).get_short_name()
+
+                os.rename(f"{self.__result_dir}/{student_dir}",
+                          f"{self.__result_dir}/{self.__lab_id}-{student_id}-{student_shortname}")
+
     def delete_extra_files(self) -> None:
         """
         删除多余的文件
@@ -161,10 +174,11 @@ class NormLab:
         处理所有的作业压缩包的任务
         """
         self.extract_source_homework()
-        # self.delete_extra_files()
-        # self.move_reports()
-        # self.remove_repetitive_dir()
-        # self.remove_empty_dir()
+        self.rename_student_file_dir()
+        self.delete_extra_files()
+        self.move_reports()
+        self.remove_repetitive_dir()
+        self.remove_empty_dir()
 
     def get_homeworks_path(self) -> str:
         """
