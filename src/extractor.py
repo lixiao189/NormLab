@@ -40,7 +40,10 @@ class UnZip(Extractor):
         super().__init__(source_path, target_path)
 
     def __enter__(self) -> Extractor:  # 创建压缩文件对象
-        self.__zip_file = zipfile.ZipFile(self._source_path)  # 压缩文件对象
+        try:
+            self.__zip_file = zipfile.ZipFile(self._source_path)  # 压缩文件对象
+        except zipfile.BadZipfile:
+            print(f"{self._source_path} is bad zip file")
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:  # 退出的时候关闭文件对象
@@ -122,7 +125,7 @@ def is_archive(file_path: str) -> bool:
         ".rar",
     ]
     path_obj = pathlib.Path(file_path)
-    return path_obj.suffix in archive_file_suffix
+    return path_obj.suffix in archive_file_suffix and "__MACOSX" not in file_path
 
 
 class ExtractPipeline:

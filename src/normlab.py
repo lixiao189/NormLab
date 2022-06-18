@@ -76,6 +76,7 @@ class NormLab:
         extra_file_list: typing.List[str] = [
             "计算机科学与技术学院-软件工程（留学生）-2019软件工程（留学生）",
             ".class"
+            ".DS_Store"
         ]
 
         for root, dirs, files in os.walk(self.__result_dir):
@@ -114,12 +115,11 @@ class NormLab:
 
         for homework_dir in homework_list:
             # 获取学生对象
-            student_id = homework_dir.split("-")[1]
-
             try:
+                student_id = homework_dir.split("-")[1]
                 student_obj = self.__student_repo.get_student(student_id)
                 report_file_name = f"{self.__lab_id}-{student_id}-{student_obj.get_short_name()}.docx"
-            except KeyError:
+            except (KeyError, IndexError):
                 continue
 
             # 处理报告 docx 文件
