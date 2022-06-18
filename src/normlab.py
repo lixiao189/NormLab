@@ -47,44 +47,8 @@ class NormLab:
         解压作业
         """
         # 解压原始文件
-        with extractor.ExtractorFactory(self.__homeworks_path, self.__result_dir).get_extractor() as e:
-            e.extract()
-
-        # 对每个学生的文件进行解压
-        for root, dirs, files in os.walk(self.__result_dir):
-            for file in files:
-                # 解压当前文件
-                path_obj = pathlib.Path(os.path.join(root, file))
-                student_id = path_obj.name.split('-')[0]
-
-                try:
-                    student_obj = self.__student_repo.get_student(student_id)
-                    student_dir_path = f"{root}/{self.__lab_id}-{student_id}-{student_obj.get_short_name()}"
-                except KeyError:
-                    student_dir_path = root
-
-                # 开始解压
-                if not extractor.is_archive(os.path.join(root, file)):
-                    continue
-                with extractor.ExtractorFactory(os.path.join(root, file), student_dir_path).get_extractor() as e:
-                    e.extract()
-
-                os.remove(os.path.join(root, file))
-
-        # 对学生的子文件夹进行解压
-        for root, dirs, files in os.walk(self.__result_dir):
-            for file in files:
-                # 解压当前文件
-                path_obj = pathlib.Path(os.path.join(root, file))
-                if not extractor.is_archive(os.path.join(root, file)):
-                    continue
-
-                with extractor.ExtractorFactory(os.path.join(root, file),
-                                                f"{root}/{path_obj.name.split('.')[0]}").get_extractor() as e:
-                    dirs.append(f"{root}/" + path_obj.name.split(".")[0])
-                    e.extract()
-
-                os.remove(os.path.join(root, file))
+        e = extractor.ExtractPipeline(self.__homeworks_path, self.__result_dir)
+        e.extract_all()
 
     def delete_extra_files(self) -> None:
         """
@@ -197,10 +161,10 @@ class NormLab:
         处理所有的作业压缩包的任务
         """
         self.extract_source_homework()
-        self.delete_extra_files()
-        self.move_reports()
-        self.remove_repetitive_dir()
-        self.remove_empty_dir()
+        # self.delete_extra_files()
+        # self.move_reports()
+        # self.remove_repetitive_dir()
+        # self.remove_empty_dir()
 
     def get_homeworks_path(self) -> str:
         """
