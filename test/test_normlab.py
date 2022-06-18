@@ -59,7 +59,5 @@ def test_cases():
             normlab_obj.handle_homework()  # 处理作业压缩包
         my_tree = get_dir_tree(homeworks_result_dir, len("../result/"))
 
-        # debug
-        print()
-        print(expected_tree)
-        print(my_tree)
+        assert expected_tree == my_tree
+

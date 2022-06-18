@@ -75,7 +75,7 @@ class NormLab:
         ]
         extra_file_list: typing.List[str] = [
             "计算机科学与技术学院-软件工程（留学生）-2019软件工程（留学生）",
-            ".class"
+            ".class",
             ".DS_Store"
         ]
 
@@ -88,48 +88,41 @@ class NormLab:
                 if file_should_delete in filename:
                     os.remove(os.path.join(root, filename))
 
-        # 处理有人上传了两份报告的情况
-        homework_list = os.listdir(self.__result_dir)
-        for homework_dir in homework_list:  # 开始对每个人的作业文件进行处理
-            docx_file_count: typing.Dict[str, int] = {}
-            docx_file_should_delete_list: typing.List[str] = []
-            # 查找所有的 docx 文件
-            for root, dirs, files in os.walk(os.path.join(self.__result_dir, homework_dir)):
-                for filename in files:
-                    if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
-                        try:
-                            docx_file_count[filename] += 1
-                            docx_file_should_delete_list.append(os.path.join(root, filename))
-                        except KeyError:
-                            docx_file_count[filename] = 1
-
-            # 删除重复的 docx 文件
-            for file_path in docx_file_should_delete_list:
-                os.remove(file_path)
-
     def move_reports(self) -> None:
         """
         移动报告文件到指定目录
         """
         homework_list = os.listdir(self.__result_dir)
+        report_file_count: typing.Dict[str, int] = {}
+        report_file_id: typing.Dict[str, int] = {}
 
         for homework_dir in homework_list:
             # 获取学生对象
             try:
                 student_id = homework_dir.split("-")[1]
                 student_obj = self.__student_repo.get_student(student_id)
-                report_file_name = f"{self.__lab_id}-{student_id}-{student_obj.get_short_name()}.docx"
             except (KeyError, IndexError):
                 continue
+
+            for root, dirs, files in os.walk(os.path.join(self.__result_dir, homework_dir)):
+                for filename in files:
+                    if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
+                        try:
+                            report_file_count[filename] += 1
+                        except KeyError:
+                            report_file_count[filename] = 1
+                            report_file_id[filename] = 1
 
             # 处理报告 docx 文件
             for root, dirs, files in os.walk(os.path.join(self.__result_dir, homework_dir)):
                 for filename in files:
                     if pathlib.Path(os.path.join(root, filename)).suffix == ".docx":
-                        os.rename(os.path.join(root, filename),
-                                  os.path.join(root, report_file_name))
-                        shutil.move(os.path.join(
-                            root, report_file_name), self.__result_dir)
+                        report_file_name = f"{self.__lab_id}-{student_id}-{student_obj.get_short_name()}"
+                        if report_file_count[filename] > 1:
+                            report_file_name += f"-{str(report_file_id[filename])}"
+                            report_file_id[filename] += 1
+                        os.rename(os.path.join(root, filename), os.path.join(root, f"{report_file_name}.docx"))
+                        shutil.move(os.path.join(root, f"{report_file_name}.docx"), self.__result_dir)
 
     def remove_repetitive_dir(self) -> None:
         """
