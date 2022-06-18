@@ -46,7 +46,7 @@ def test_unrar():
 
 
 def test_extract_test_case1():
-    sourcefile_path = "../data/test-cases/test-case-1/Lab01-中文.zip"
+    sourcefile_path = "../data/test-cases/test-case-1/input.zip"
     target_path = "../result"
 
     with contextlib.suppress(FileNotFoundError):
