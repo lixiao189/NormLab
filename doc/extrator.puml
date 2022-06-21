@@ -5,6 +5,7 @@ ExtractPipeline -> ExtratorFactory: 从工厂获取压缩对象
 ExtratorFactory --> ExtractPipeline: 返回对应的解压对象
 loop 压缩包内的文件长度
 ExtractPipeline -> Extrator: 开始压缩
+Extrator -> Extrator: 处理乱码
 Extrator --> ExtractPipeline: 添加压缩包中的嵌套压缩包列表进 pipeline
 end
 end
