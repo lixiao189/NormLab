@@ -1,0 +1,8 @@
+@startuml filter
+loop 解压完以后的所有文件个数
+alt 发现当前文件在黑名单中
+    filter -> filesystem: 下达删除文件
+    filesystem -> filter: 返回删除状态
+end
+end
+@enduml
