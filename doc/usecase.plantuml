@@ -1,0 +1,13 @@
+@startuml usecase
+left to right direction
+
+:Teacher: as teacher
+
+teacher --> (start normlab system) 
+(start normlab system) ..> (import student namelist): <<include>>
+(start normlab system) ..> (extract source homework): <<include>>
+(start normlab system) ..> (handle homework): <<include>>
+
+(handle homework) ..> (traversal directory): <<extends>>
+
+@enduml
