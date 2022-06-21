@@ -1,0 +1,15 @@
+@startuml removerepetive
+loop 解压完以后的所有文件个数
+Normlab -> filesystem: 获取当前目录下的文件目录数量
+filesystem --> Normlab: 返回当前的目录下的文件目录数量
+
+alt 当前目录下文件的数量只有1个并且该子文件夹的名称与当前的文件夹的名称高度相似
+Normlab -> filesystem: 将当前文件夹命名为 dir_deleted
+filesystem --> Normlab: 返回重命名状态
+Normlab -> filesystem: 移动子文件夹到父文件夹
+filesystem --> Normlab: 返回移动状态
+Normlab -> filesystem: 删除旧文件夹
+filesystem --> Normlab: 返回删除状态
+Normlab -> Normlab: 将移动上来的新文件夹添加到文件循环队列
+end
+@enduml
