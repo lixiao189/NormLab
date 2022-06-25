@@ -89,6 +89,17 @@ package "extractor" {
         + __exit(exc_type, exc_val, exc_tb): None
         + extract(): None
     }
+
+    class ExtractorFactory {
+        - __source_path: str
+        _ __target_path: str
+        + get_extractor(): Extractor
+    }
+
+    class ExtractPipeline {
+        + __init__()
+        + extract_all()
+    }
 }
 
 class NormLab {
@@ -114,5 +125,7 @@ class NormLab {
 NormLab o-- AbstractSimilarReporter
 NormLab o-- AbstractStudentRepo
 NormLab o-- SimilarGroup
-NormLab ..> Extractor
+NormLab ..> ExtractPipeline
+ExtractPipeline ..> ExtractorFactory
+ExtractorFactory ..> Extractor
 @enduml
