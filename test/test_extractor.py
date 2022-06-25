@@ -43,14 +43,3 @@ def test_unrar():
 
         # 删除临时文件
         shutil.rmtree(target_dir_path)
-
-
-def test_extract_test_case1():
-    sourcefile_path = "../data/test-cases/test-case-1/input.zip"
-    target_path = "../result"
-
-    with contextlib.suppress(FileNotFoundError):
-        shutil.rmtree(target_path)
-    with extractor.ExtractorFactory(sourcefile_path, target_path).get_extractor() \
-            as file_extractor:
-        file_extractor.extract()
