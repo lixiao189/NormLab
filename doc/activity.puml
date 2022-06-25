@@ -1,0 +1,29 @@
+@startuml
+|NormLab|
+start
+:输入压缩包路径;
+
+|StudentRepo|
+:读取学生信息;
+
+|Extractor|
+:将输入压缩包放入流水线;
+while(流水线非空?)
+:从流水线上取出一个压缩包;
+switch (测试?)
+case ( 压缩包为 Zip )
+  :用 Unzip 类解压压缩包;
+case ( 压缩包为 Rar )
+  :用 Unrar 类解压压缩包;
+endswitch
+:将压缩包中的嵌套压缩包添加到流水线中;
+endwhile
+
+|NormLab|
+:重命名学生文件夹;
+:删除过滤多余的文件;
+:移动学生的报告;
+:删除重复的文件;
+:删除空文件夹;
+stop
+@enduml
