@@ -10,7 +10,7 @@ start
 :将输入压缩包放入流水线;
 while(流水线非空?)
 :从流水线上取出一个压缩包;
-switch (测试?)
+switch (压缩包类型?)
 case ( 压缩包为 Zip )
   :用 Unzip 类解压压缩包;
 case ( 压缩包为 Rar )
