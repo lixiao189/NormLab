@@ -1,0 +1,18 @@
+@startuml extrator
+Normlab -> StudentRepo: 加载学生信息列表
+StudentRepo --> Normlab: 存入学生信息
+
+Normlab -> ExtractPipeline: 放入最开始的压缩包
+loop pipeline 不为空
+ExtractPipeline -> ExtratorFactory: 从工厂获取压缩对象
+ExtratorFactory --> ExtractPipeline: 返回对应的解压对象
+loop 压缩包内的文件长度
+ExtractPipeline -> Extrator: 开始压缩
+Extrator -> Extrator: 处理乱码
+Extrator --> ExtractPipeline: 添加压缩包中的嵌套压缩包列表进 pipeline
+end
+end
+ExtractPipeline --> Normlab: 压缩包解压后的文件
+
+Normlab --> Normlab: 整理过滤多余的文件
+@enduml
